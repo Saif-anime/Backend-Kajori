@@ -9,13 +9,15 @@ require('dotenv').config()
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
 app.use('/uploads', express.static('uploads'))
 const conn = require('./conn');
 app.use(require('./Controller/BannerController'));
 app.use(require('./Controller/productController'));
 app.use(require('./Controller/CategoryController'));
-
+app.use(require('./Controller/SubCategoryController'));
+app.use(require('./Controller/userController'));
 
 
 app.get('/', (req, res) => {

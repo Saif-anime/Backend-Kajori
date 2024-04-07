@@ -10,6 +10,7 @@ const CategorySchema = new mongoose.Schema({
         required:true,
         default:"",
     },
+    
     createAt:{type:Date,detault:Date.now},
     updateAt:{type:Date,detault:Date.now}
 })

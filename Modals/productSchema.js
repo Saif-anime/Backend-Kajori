@@ -19,7 +19,7 @@ const ProductSchema = new mongoose.Schema({
         required:true,
     },
     product_category:{
-        type:mongoose.Schema.Types.ObjectId, ref:'Categories', required:true,
+        type:mongoose.Schema.Types.ObjectId, ref:'SubCategorySchema', required:true,
     },
     sizes:[{type:String, enum:['XS', 'S', 'M', 'L', 'XL', 'XXL']}],
     gender:{type:String, required:true},
