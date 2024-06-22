@@ -1,18 +1,23 @@
 const mongoose = require('mongoose');
 
 const CategorySchema = new mongoose.Schema({
-    title:{
-        type:String,
-        default:""
-    },
-    CategoryImg:{
-        type:String,
+    title: {
+        type: String,
         required:true,
-        default:"",
+        default: ""
     },
-    
-    createAt:{type:Date,detault:Date.now},
-    updateAt:{type:Date,detault:Date.now}
+    CategoryImg: {
+        type: String,
+        required: true,
+        default: "",
+    }, 
+    isActive: {
+        type: Number,
+        default: 1,
+    },
+
+    createAt: { type: Date, detault: Date.now },
+    updateAt: { type: Date, detault: Date.now }
 })
 
 const Category = mongoose.model('Category', CategorySchema);

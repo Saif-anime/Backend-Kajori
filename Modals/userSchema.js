@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     email:{
         type:String,
         unique:true,
+        required:true,
     },
     phone:{
         type:Number,
@@ -16,6 +17,7 @@ const UserSchema = new mongoose.Schema({
     },
     password:{
         type:String,
+        required:true,
     },
     isAdmin:{
         type:Boolean,

@@ -70,6 +70,63 @@ router.get('/Admin/Categories/:id', async (req, res) => {
 })
 
 
+
+
+// update here put all entity update 
+
+
+
+
+
+router.put('/Admin/Categories/:id', uploads.single('file'), async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { title, bannerLink } = req.body;
+        const banner = await Category.findByIdAndUpdate(id, {
+            title: title,
+            CategoryImg: `${process.env.DOMAIN_NAME}/uploads/category/${req.file.filename}`,
+        }, { new: true })
+
+
+        const update = await banner.save();
+        res.status(201).json(update);
+
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+
+
+
+
+// delete individiual banner 
+
+router.delete('/Admin/Categories/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Find the banner by ID
+        const banner = await Category.findById(id);
+        if (!banner) {
+            return res.status(404).json({ error: 'Banner not found' });
+        }
+
+        // Toggle isActive status
+        banner.isActive = banner.isActive === 1 ? 0 : 1;
+
+        // Save the updated banner
+        const updatedBanner = await banner.save();
+
+        res.status(200).json(updatedBanner); // Respond with the updated banner
+    } catch (error) {
+        console.error('Error updating banner isActive:', error);
+        res.status(400).json({ error: error.message });
+    }
+})
+
+
+
+
 // delete category 
 
 router.delete('/Admin/Categories', async (req, res) => {

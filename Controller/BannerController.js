@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
         cb(null, file_folder);
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() +"_"+ file.originalname);
+        cb(null, Date.now() + "_" + file.originalname);
     }
 })
 
@@ -26,7 +26,7 @@ router.post('/Admin/Banner', uploads.single('file'), async (req, res) => {
     try {
 
         const { title, bannerLink } = req.body;
-        
+
 
         const banner = await Banner({
             title: title,
@@ -81,7 +81,7 @@ router.get('/Admin/Banner/:id', async (req, res) => {
 
 
 
-router.put('/Admin/Banner/:id', uploads.single('file'), async (req, res) =>{
+router.put('/Admin/Banner/:id', uploads.single('file'), async (req, res) => {
     try {
         const id = req.params.id;
         const { title, bannerLink } = req.body;
@@ -89,12 +89,12 @@ router.put('/Admin/Banner/:id', uploads.single('file'), async (req, res) =>{
             title: title,
             BannerImg: `${process.env.DOMAIN_NAME}/uploads/banner/${req.file.filename}`,
             BannerLink: bannerLink
-        }, {new:true})
+        }, { new: true })
 
 
-       const update =  await banner.save();
-       res.status(201).json(update);
-        
+        const update = await banner.save();
+        res.status(201).json(update);
+
     } catch (error) {
         res.status(400).send(error)
     }
@@ -113,6 +113,32 @@ router.delete('/Admin/Banner', async (req, res) => {
         res.status(201).json(all_banners);
     } catch (error) {
         res.status(400).json({ error: error.message })
+    }
+})
+
+
+// delete individiual banner 
+
+router.delete('/Admin/Banner/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Find the banner by ID
+        const banner = await Banner.findById(id);
+        if (!banner) {
+            return res.status(404).json({ error: 'Banner not found' });
+        }
+
+        // Toggle isActive status
+        banner.isActive = banner.isActive === 1 ? 0 : 1;
+
+        // Save the updated banner
+        const updatedBanner = await banner.save();
+
+        res.status(200).json(updatedBanner); // Respond with the updated banner
+    } catch (error) {
+        console.error('Error updating banner isActive:', error);
+        res.status(400).json({ error: error.message });
     }
 })
 

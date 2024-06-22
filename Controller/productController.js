@@ -26,38 +26,49 @@ const uploads = multer({ storage: storage });
 
 
 // add product here 
-
-router.post('/Admin/product', uploads.single('file'), async (req, res) => {
+router.post('/Admin/product', uploads.array('file', 8), async (req, res) => {
     try {
+        const {
+            product_name, blouse_type, febric, product_subcategory, uniform_type, occasion,
+            offer, discount, blouse_added, blouse_dimension, online_price, age_upper_limit,
+            age_lower_limit, wash_care, premium, out_of_stock, actual_price, product_desc,
+            product_category, sizes, gender, colors, quantity
+        } = req.body;
 
-        const { product_name, product_price, product_desc, product_category, sizes, gender, colors, quantity } = req.body;
+     
 
+        // Check if files were uploaded
+        if (!req.files || req.files.length === 0) {
+            console.log('no file uploaded')
+            console.log(req.files)
+            return res.status(400).json({ error: 'No files uploaded' });
+        }
+
+
+
+        // Process each uploaded file
+        const productImages = req.files.map(file => ({product_Img: `${process.env.DOMAIN_NAME}/uploads/product/${file.filename}`}));
 
         const product = await Product({
-            product_name: product_name,
-            product_Img: `${process.env.DOMAIN_NAME}/uploads/product/${req.file.filename}`,
-            product_price: product_price,
-            product_desc: product_desc,
-            product_category: product_category,
-            sizes: sizes,
-            gender: gender,
-            colors: colors,
-            quantity: quantity,
-            slug: slugify(product_name, { lower: true }) + Date.now()
-        })
-
-
-
-
+            product_name, product_desc, product_category, product_subcategory,
+            Blouse_type: blouse_type, Occasion: occasion, fabric: febric, Offer: offer,
+            Discount: discount, Uniform_type: uniform_type, Age_Upper_Limit: age_upper_limit,
+            Age_Lower_Limit: age_lower_limit, Blouse_Added: blouse_added,
+            Blouse_Dimension: blouse_dimension, sizes, gender, wash_care, Premium: premium,
+            Out_of_Stock: out_of_stock, Online_price: online_price, Actual_price: actual_price,
+            colors, quantity, slug: slugify(product_name, { lower: true }) + Date.now(),
+            product_Img: productImages // Assign the processed images to the product
+        });
 
         const saveproduct = await product.save();
+        console.log(saveproduct);
         res.status(201).json(saveproduct);
-
-
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        console.log(error);
+        res.status(400).json({ error: error.message });
     }
-})
+});
+
 
 
 
@@ -90,6 +101,32 @@ router.get('/Admin/product/:slug', async (req, res) => {
 
     } catch (error) {
         res.status(400).json({ error: error.message })
+    }
+})
+
+
+// delete individiual banner 
+
+router.delete('/Admin/product/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Find the banner by ID
+        const banner = await Product.findById(id);
+        if (!banner) {
+            return res.status(404).json({ error: 'Banner not found' });
+        }
+
+        // Toggle isActive status
+        banner.isActive = banner.isActive === 1 ? 0 : 1;
+
+        // Save the updated banner
+        const updatedBanner = await banner.save();
+
+        res.status(200).json(updatedBanner); // Respond with the updated banner
+    } catch (error) {
+        console.error('Error updating banner isActive:', error);
+        res.status(400).json({ error: error.message });
     }
 })
 
